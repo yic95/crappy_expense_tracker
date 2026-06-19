@@ -1,6 +1,7 @@
 import pathlib
 import csv
 import datetime as dt
+from time import sleep
 
 class ExpenseService:
     def __init__(self, data_dir: pathlib.Path):

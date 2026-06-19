@@ -21,11 +21,13 @@ class ExpenseModel(QAbstractListModel):
     TagsRole = Qt.UserRole + 5
     loadingFailed = Signal(str)
     hasMoreChanged = Signal(bool)
+    allTagChanged = Signal(list)
 
-    def __init__(self, parent=None,*, service=None):
+    def __init__(self, parent=None,*, service, tags_service):
         super().__init__(parent)
         self.entries = []
         self.service = service
+        self.tags_service = tags_service
         self.earlist_date = None
         self.batch_size_day = 7
         self._has_more_data = True
@@ -79,7 +81,11 @@ class ExpenseModel(QAbstractListModel):
             self.TagsRole: QByteArray(b"tags")
         }
 
-    @Slot(QDate, int, str)
+    @Property(list, notify=allTagChanged)
+    def all_tags(self):
+        return self.tags_service.read()
+
+    @Slot(QDate, int, str, list)
     def add_expense(self, date: QDate, expense: int, title: str, tags: list[str]):
         max_info = (-1, 0)
         try:
@@ -105,7 +111,7 @@ class ExpenseModel(QAbstractListModel):
         self.entries.pop(idx.row())
         self.endRemoveRows()
 
-    @Slot(QModelIndex, QDate, int, str)
+    @Slot(QModelIndex, QDate, int, str, list)
     def modify_expense(self, idx: QModelIndex, date: QDate, expense: int, title: str, tags: list[str]):
         if not idx.isValid():
             return None

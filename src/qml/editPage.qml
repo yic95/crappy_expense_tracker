@@ -72,6 +72,51 @@ Kirigami.ScrollablePage {
             }
         }
 
+        Item {
+            Kirigami.FormData.label: "Tags"
+            Kirigami.FormData.isSection: true
+
+            Flow {
+                // visible: tags !== undefined && tags.length > 0
+
+                id: tagsFlow
+
+                property var activeTags: !editPage.isCreateMode ? (editPage.getModelData("tags")) : []
+
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.smallSpacing
+
+                Repeater {
+                    model: expenseModel.all_tags
+
+                    delegate: Kirigami.Chip {
+                        required property string modelData
+
+                        checked: tagsFlow.activeTags.indexOf(modelData) != -1
+                        text: modelData.trim()
+                        closable: false
+                        onCheckedChanged: {
+                            let currentTags = tagsFlow.activeTags.slice(); // Copy JS array safely
+                            if (checked) {
+                                if (currentTags.indexOf(modelData) === -1)
+                                    currentTags.push(modelData);
+
+                            } else {
+                                let idx = currentTags.indexOf(modelData);
+                                if (idx !== -1)
+                                    currentTags.splice(idx, 1);
+
+                            }
+                            tagsFlow.activeTags = currentTags;
+                        }
+                    }
+
+                }
+
+            }
+
+        }
+
     }
 
     footer: QQC2.DialogButtonBox {
@@ -92,11 +137,9 @@ Kirigami.ScrollablePage {
             onClicked: {
                 let amt = parseInt(expenseField.text) || 0;
                 if (editPage.isCreateMode)
-                    expenseModel.add_expense(editPage.selectedDate, amt, titleField.text);
-                else if (deleteCheckBox.checkState)
-                    expenseModel.remove_expense(getIndex());
+                    expenseModel.add_expense(editPage.selectedDate, amt, titleField.text, tagsFlow.activeTags);
                 else
-                    expenseModel.modify_expense(getIndex(), editPage.selectedDate, amt, titleField.text);
+                    expenseModel.modify_expense(getIndex(), editPage.selectedDate, amt, titleField.text, tagsFlow.activeTags);
                 popPage();
             }
         }
