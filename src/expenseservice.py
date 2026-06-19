@@ -21,8 +21,9 @@ class ExpenseService:
                     'date': dt.date.strptime(row[0], "%Y-%m-%d"),
                     'id': int(row[1]),
                     'expense': int(row[2]),
-                    'title': row[3]
-                    } for row in reader if len(row) == 4]
+                    'title': row[3],
+                    'tags': [s.strip() for s in row[4].split(' ') if s.strip()] if len(row) >= 5 else []
+                    } for row in reader if len(row) >= 4]
         return table
 
     def _write_table(self, date: dt.date, table):
@@ -31,7 +32,12 @@ class ExpenseService:
             with pth.open('w', encoding='utf-8', newline='') as f:
                 writer = csv.writer(f, delimiter='\t')
                 for row in table:
-                    writer.writerow([dt.date.strftime(row['date'], "%Y-%m-%d"), row['id'], row['expense'], row['title']])
+                    writer.writerow([
+                        dt.date.strftime(row['date'], "%Y-%m-%d"),
+                        row['id'],
+                        row['expense'],
+                        row['title'],
+                        " ".join(row['tags'])])
 
     def write(self, ent: dict):
         table = self._read_table(ent['date'])
@@ -52,7 +58,7 @@ class ExpenseService:
         self._write_table(ent['date'], table)
 
     def read(self, start: dt.date, end: dt.date):
-        if end < start:
+        if end <= start:
             raise ValueError("End date < start date")
         dates = []
         cmonth, cyear = start.month, start.year

@@ -18,12 +18,21 @@ class ExpenseModel(QAbstractListModel):
     DateRole = Qt.UserRole + 2
     ExpenseRole = Qt.UserRole + 3
     TitleRole = Qt.UserRole + 4
+    TagsRole = Qt.UserRole + 5
     loadingFailed = Signal(str)
+    hasMoreChanged = Signal(bool)
 
     def __init__(self, parent=None,*, service=None):
         super().__init__(parent)
         self.entries = []
         self.service = service
+        self.earlist_date = None
+        self.batch_size_day = 7
+        self._has_more_data = True
+
+    @Property(bool, notify=hasMoreChanged)
+    def hasMore(self):
+        return self._has_more_data
 
     def rowCount(self, parent=QModelIndex()):
         return len(self.entries)
@@ -43,15 +52,10 @@ class ExpenseModel(QAbstractListModel):
             return row['expense']
         if role == self.TitleRole:
             return row['title']
+        if role == self.TagsRole:
+            return row['tags']
         print("...")
         return None
-
-    @Slot(int, result=str)
-    def data_title(self, index):
-        try:
-            return self.entries[index]['title']
-        except KeyError:
-            return None
 
     @Slot(str, result=int)
     def get_role(self, name):
@@ -63,6 +67,8 @@ class ExpenseModel(QAbstractListModel):
             return self.DateRole
         if name == 'title':
             return self.TitleRole
+        if name == 'tags':
+            return self.TagsRole
 
     def roleNames(self):
         return {
@@ -70,10 +76,11 @@ class ExpenseModel(QAbstractListModel):
             self.DateRole: QByteArray(b"date"),
             self.ExpenseRole: QByteArray(b"expense"),
             self.TitleRole: QByteArray(b"title"),
+            self.TagsRole: QByteArray(b"tags")
         }
 
     @Slot(QDate, int, str)
-    def add_expense(self, date: QDate, expense: int, title: str):
+    def add_expense(self, date: QDate, expense: int, title: str, tags: list[str]):
         max_info = (-1, 0)
         try:
             max_info = max([
@@ -90,33 +97,48 @@ class ExpenseModel(QAbstractListModel):
         self.entries.insert(max_info[0] + 1, new_entry)
         self.endInsertRows()
 
+    @Slot(QModelIndex)
+    def remove_expense(self, idx: QModelIndex):
+        row = self.entries[idx.row()]
+        self.service.delete(row['date'].toPython(), row['id'])
+        self.beginRemoveRows(QModelIndex(), idx.row(), idx.row())
+        self.entries.pop(idx.row())
+        self.endRemoveRows()
+
     @Slot(QModelIndex, QDate, int, str)
-    def modify_expense(self, idx: QModelIndex, date: QDate, expense: int, title: str):
+    def modify_expense(self, idx: QModelIndex, date: QDate, expense: int, title: str, tags: list[str]):
         if not idx.isValid():
             return None
         row = self.entries[idx.row()]
         self.service.update({
-            'date': row['date'].toPython(),
+            'date': date.toPython(),
             'id': row['id'],
-            'expense': row['expense'],
-            'title': row['title']})
+            'expense': expense,
+            'title': title,
+            'tags': tags})
         row['expense'] = expense
         row['title'] = title
         row['date'] = date
+        row['tags'] = tags
         self.dataChanged.emit(idx, idx)
-    
+
     @Slot()
     def load(self):
-        entries = []
+        new_entries = []
+        if not self.earlist_date:
+            self.earlist_date = datetime.date.today()
         try:
-            entries = self.service.read(datetime.date.today() - datetime.timedelta(30), datetime.date.today())
+            new_entries = self.service.read(self.earlist_date - datetime.timedelta(self.batch_size_day), self.earlist_date)
+            if new_entries:
+                self.earlist_date = self.earlist_date - datetime.timedelta(self.batch_size_day + 1)
         except Exception as e:
             print(e)
             self.loadingFailed.emit(f"Fail to load budget file: {str(e)}")
-        for row in entries:
+        for row in new_entries:
             row['date'] = QDate(row['date'].year, row['date'].month, row['date'].day)
-        entries.sort(reverse=True, key=lambda d: d['date'])
+        new_entries.sort(reverse=True, key=lambda d: d['date'])
 
-        self.beginResetModel()
-        self.entries = entries
-        self.endResetModel()
+        if new_entries:
+            self.beginInsertRows(QModelIndex(), len(self.entries), len(self.entries) + len(new_entries) - 1)
+            self.entries.extend(new_entries)
+            self.endInsertRows()

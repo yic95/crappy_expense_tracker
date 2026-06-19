@@ -23,20 +23,32 @@ Kirigami.ScrollablePage {
         return expenseModel.index(targetRow, 0);
     }
 
+    function popPage() {
+        applicationWindow().pageStack.pop();
+    }
+
     title: isCreateMode ? "Add New Expense" : "Edit Expense"
 
-    ColumnLayout {
-        width: parent.width
-        spacing: Kirigami.Units.largeSpacing
+    Kirigami.PromptDialog {
+        id: deleteConfirmationDialog
 
-        QQC2.Label {
-            text: "Expense"
-            font.bold: true
+        title: "Delete Expense?"
+        standardButtons: QQC2.Dialog.Yes | QQC2.Dialog.No
+        onAccepted: {
+            // Invoke your delete routine on the raw model
+            expenseModel.remove_expense(getIndex());
+            popPage();
         }
+        subtitle: "Permanently delete this expense record?"
+    }
+
+    Kirigami.FormLayout {
+        width: parent.width
 
         QQC2.TextField {
             id: expenseField
 
+            Kirigami.FormData.label: "Expense: "
             Layout.fillWidth: true
             placeholderText: ""
             inputMethodHints: Qt.ImhDigitsOnly
@@ -47,14 +59,10 @@ Kirigami.ScrollablePage {
             }
         }
 
-        QQC2.Label {
-            text: "Description"
-            font.bold: true
-        }
+        QQC2.TextField {
+            id: titleField
 
-        QQC2.TextArea {
-            id: titleArea
-
+            Kirigami.FormData.label: "Description"
             Layout.fillWidth: true
             placeholderText: ""
             Component.onCompleted: {
@@ -67,22 +75,41 @@ Kirigami.ScrollablePage {
     }
 
     footer: QQC2.DialogButtonBox {
-        standardButtons: QQC2.DialogButtonBox.Ok | QQC2.DialogButtonBox.Cancel
-        onAccepted: {
-            let amt = parseInt(expenseField.text) || 0;
-            if (editPage.isCreateMode) {
-                // Call the model's add_expense slot directly
-                expenseModel.add_expense(editPage.selectedDate, amt, titleArea.text);
-            } else {
-                // Generate the proper QModelIndex and update the model
-                let modelIndex = expenseModel.index(editPage.targetRow, 0);
-                expenseModel.modify_expense(modelIndex, editPage.selectedDate, amt, titleArea.text);
+        QQC2.Button {
+            visible: !isCreateMode
+            QQC2.DialogButtonBox.buttonRole: QQC2.DialogButtonBox.ActionRole
+            icon.name: "delete-symbolic"
+            text: "Delete Entry"
+            onClicked: {
+                deleteConfirmationDialog.open();
             }
-            applicationWindow().pageStack.pop();
         }
-        onRejected: {
-            applicationWindow().pageStack.pop();
+
+        QQC2.Button {
+            icon.name: "document-save-symbolic"
+            QQC2.DialogButtonBox.buttonRole: QQC2.DialogButtonBox.AcceptRole
+            text: "Save"
+            onClicked: {
+                let amt = parseInt(expenseField.text) || 0;
+                if (editPage.isCreateMode)
+                    expenseModel.add_expense(editPage.selectedDate, amt, titleField.text);
+                else if (deleteCheckBox.checkState)
+                    expenseModel.remove_expense(getIndex());
+                else
+                    expenseModel.modify_expense(getIndex(), editPage.selectedDate, amt, titleField.text);
+                popPage();
+            }
         }
+
+        QQC2.Button {
+            icon.name: "dialog-cancel-symbolic"
+            QQC2.DialogButtonBox.buttonRole: QQC2.DialogButtonBox.RejectRole
+            text: "Cancel"
+            onClicked: {
+                popPage();
+            }
+        }
+
     }
 
 }

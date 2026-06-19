@@ -33,7 +33,6 @@ def main():
     if len(engine.rootObjects()) == 0:
         quit()
 
-    expense_model.load()
     app.exec()
 
 

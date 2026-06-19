@@ -4,21 +4,49 @@ import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
 
 Kirigami.ApplicationWindow {
+    id: appwindow
+
+    function pushEditPage(targetIndex) {
+        if (targetIndex === undefined)
+            targetIndex = -1;
+
+        applicationWindow().pageStack.push(Qt.resolvedUrl("editPage.qml"), {
+            "targetRow": targetIndex
+        });
+    }
+
     minimumWidth: Kirigami.Units.gridUnit * 20
     minimumHeight: Kirigami.Units.gridUnit * 30
     width: minimumWidth
     height: minimumHeight
+    pageStack.popHiddenPages: true
     pageStack.initialPage: initPage
 
     Component {
-        id: expenseCard
+        id: expenseSectionTitle
+
+        Kirigami.ListSectionHeader {
+            required property string section
+
+            text: section
+
+            anchors {
+                left: parent.left
+                right: parent.right
+            }
+
+        }
+
+    }
+
+    Component {
+        id: expenseListDelegate
 
         Kirigami.AbstractCard {
             onClicked: {
-                applicationWindow().pageStack.push(Qt.resolvedUrl("editPage.qml"), {
-                    "targetRow": index
-                });
+                pushEditPage(index);
             }
+            showClickFeedback: true
 
             contentItem: Item {
                 implicitHeight: delegateLayout.implicitHeight
@@ -32,8 +60,8 @@ Kirigami.ApplicationWindow {
 
                     anchors {
                         left: parent.left
-                        // top: parent.top
                         right: parent.right
+                        top: parent.top
                     }
 
                     ColumnLayout {
@@ -43,6 +71,31 @@ Kirigami.ApplicationWindow {
                             Layout.fillWidth: true
                             level: 2
                             text: title
+                        }
+
+                        Kirigami.Separator {
+                            visible: tags.length > 0
+                        }
+
+                        Flow {
+                            // visible: tags !== undefined && tags.length > 0
+
+                            Layout.fillWidth: true
+                            spacing: Kirigami.Units.smallSpacing
+
+                            Repeater {
+                                model: tags
+
+                                delegate: Kirigami.Chip {
+                                    required property string modelData
+
+                                    text: modelData.trim()
+                                    closable: false
+                                    interactive: false
+                                }
+
+                            }
+
                         }
 
                     }
@@ -68,17 +121,6 @@ Kirigami.ApplicationWindow {
 
             verticalScrollBarPolicy: QQC2.ScrollBar.AlwaysOn
             title: "Expenses"
-            actions: [
-                Kirigami.Action {
-                    text: "New Expense"
-                    icon.name: "list-add-symbolic"
-                    onTriggered: {
-                        applicationWindow().pageStack.push(Qt.resolvedUrl("editPage.qml"), {
-                            "targetRow": -1
-                        });
-                    }
-                }
-            ]
 
             Connections {
                 function onLoadingFailed(errmsg) {
@@ -88,17 +130,39 @@ Kirigami.ApplicationWindow {
                 target: expenseModel
             }
 
-            ListView {
+            Kirigami.CardsListView {
                 id: expenseListView
 
-                anchors.fill: parent
                 spacing: Kirigami.Units.largeSpacing
                 model: expenseModel
+                delegate: expenseListDelegate
+                anchors.fill: parent
                 section.property: "date"
-                delegate: expenseCard
+                section.delegate: expenseSectionTitle
+                onAtYEndChanged: {
+                    if (expenseListView.atYEnd)
+                        expenseModel.load();
 
-                section.delegate: Kirigami.Heading {
-                    text: Qt.formatDate(section, "yyyy-MM-dd")
+                }
+            }
+
+            header: QQC2.ToolBar {
+
+                contentItem: Item {
+                    RowLayout {
+                        QQC2.Button {
+                            onClicked: {
+                                pushEditPage(-1);
+                            }
+                            icon.name: "list-add-symbolic"
+                            text: "Add New Entry"
+                        }
+
+                        QQC2.ComboBox {
+                        }
+
+                    }
+
                 }
 
             }
