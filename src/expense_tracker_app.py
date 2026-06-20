@@ -9,10 +9,14 @@ import json
 
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtCore import QUrl
-from PySide6.QtQml import QQmlApplicationEngine
+from PySide6.QtQml import (
+    QQmlApplicationEngine,
+    qmlRegisterType,
+)
 from expensemodel import ExpenseModel
 from expenseservice import ExpenseService
 from tagsservice import TagsService
+from datevalidator import DateValidator
 
 
 def get_config():
@@ -46,6 +50,7 @@ def main():
     """Needed to close the app with Ctrl+C"""
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
+    qmlRegisterType(DateValidator, "CustomValidators", 1, 0, "DateValidator")
     base_path = os.path.abspath(os.path.dirname(__file__))
     url = QUrl(f"file://{base_path}/qml/main.qml")
     engine.rootContext().setContextProperty("expenseModel", expense_model)

@@ -1,3 +1,4 @@
+import CustomValidators 1.0
 import QtQuick
 import QtQuick.Controls 2.15 as QQC2
 import QtQuick.Layouts 1.15
@@ -46,17 +47,38 @@ Kirigami.ScrollablePage {
         width: parent.width
 
         QQC2.TextField {
+            id: dateField
+
+            Kirigami.FormData.label: "Date:"
+            Layout.fillWidth: true
+            placeholderText: "YYYY-MM-DD"
+            Component.onCompleted: {
+                let d = editPage.selectedDate;
+                // YYYY-MM-DD 'T' ...
+                text = d.toISOString().split('T')[0];
+            }
+
+            validator: DateValidator {
+            }
+
+        }
+
+        QQC2.TextField {
             id: expenseField
 
             Kirigami.FormData.label: "Expense: "
             Layout.fillWidth: true
-            placeholderText: ""
+            placeholderText: "100"
             inputMethodHints: Qt.ImhDigitsOnly
             Component.onCompleted: {
                 if (!editPage.isCreateMode)
                     text = editPage.getModelData("expense").toString();
 
             }
+
+            validator: IntValidator {
+            }
+
         }
 
         QQC2.TextField {
@@ -133,13 +155,15 @@ Kirigami.ScrollablePage {
         QQC2.Button {
             icon.name: "document-save-symbolic"
             QQC2.DialogButtonBox.buttonRole: QQC2.DialogButtonBox.AcceptRole
+            enabled: dateField.acceptableInput && expenseField.acceptableInput
             text: "Save"
             onClicked: {
                 let amt = parseInt(expenseField.text) || 0;
+                let parsedDate = new Date(dateField.text);
                 if (editPage.isCreateMode)
-                    expenseModel.add_expense(editPage.selectedDate, amt, titleField.text, tagsFlow.activeTags);
+                    expenseModel.add_expense(parsedDate, amt, titleField.text, tagsFlow.activeTags);
                 else
-                    expenseModel.modify_expense(getIndex(), editPage.selectedDate, amt, titleField.text, tagsFlow.activeTags);
+                    expenseModel.modify_expense(getIndex(), parsedDate, amt, titleField.text, tagsFlow.activeTags);
                 popPage();
             }
         }
