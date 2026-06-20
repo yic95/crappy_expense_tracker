@@ -1,0 +1,1 @@
+Read the following table of daily expenses. First column is id, second column is date, third column is the amount of money spent, and fourth column is the note attached. List the id of entries that are wasteful or unnecessary, one id per line. Type only the id and nothing more.

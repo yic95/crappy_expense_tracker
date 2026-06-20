@@ -96,7 +96,7 @@ class ExpenseModel(QAbstractListModel):
                 key=lambda pair: pair[1])
         except ValueError:
             pass
-        new_entry = {'date': date.toPython(), 'id': max_info[1] + 1, 'expense': expense, 'title': title}
+        new_entry = {'date': date.toPython(), 'id': max_info[1] + 1, 'expense': expense, 'title': title, 'tags': tags}
         self.service.write(new_entry)
         new_entry['date'] = date
         self.beginInsertRows(QModelIndex(), max_info[0] + 1, max_info[0] + 1)
@@ -133,10 +133,15 @@ class ExpenseModel(QAbstractListModel):
         new_entries = []
         if not self.earlist_date:
             self.earlist_date = datetime.date.today()
+        if self.earlist_date < self.service.earliest_month():
+            return
         try:
-            new_entries = self.service.read(self.earlist_date - datetime.timedelta(self.batch_size_day), self.earlist_date)
-            if new_entries:
+            new_entries = []
+            count_tries = 0
+            while not new_entries and count_tries < 100:
+                new_entries = self.service.read(self.earlist_date - datetime.timedelta(self.batch_size_day), self.earlist_date)
                 self.earlist_date = self.earlist_date - datetime.timedelta(self.batch_size_day + 1)
+                count_tries += 1
         except Exception as e:
             print(e)
             self.loadingFailed.emit(f"Fail to load budget file: {str(e)}")

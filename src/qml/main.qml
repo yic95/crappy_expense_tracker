@@ -78,8 +78,7 @@ Kirigami.ApplicationWindow {
                         }
 
                         Flow {
-                            // visible: tags !== undefined && tags.length > 0
-
+                            visible: tags.length > 0
                             Layout.fillWidth: true
                             spacing: Kirigami.Units.smallSpacing
 

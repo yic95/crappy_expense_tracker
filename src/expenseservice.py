@@ -6,8 +6,16 @@ from time import sleep
 class ExpenseService:
     def __init__(self, data_dir: pathlib.Path):
         self.data_dir = pathlib.Path(data_dir)
+        self._earliest_month = None
         if not self.data_dir.is_dir():
             raise ValueError(f'{data_dir} is not a directory')
+
+    def _date_valid(self, date_str):
+        try:
+            dt.date.strptime(date_str, "%Y-%m-%d")
+            return True
+        except:
+            return False
 
     def _path_for_date(self, date: dt.date):
         return self.data_dir / date.strftime('%Y_%m.tsv')
@@ -24,7 +32,7 @@ class ExpenseService:
                     'expense': int(row[2]),
                     'title': row[3],
                     'tags': [s.strip() for s in row[4].split(' ') if s.strip()] if len(row) >= 5 else []
-                    } for row in reader if len(row) >= 4]
+                    } for row in reader if len(row) >= 4 and self._date_valid(row[0])]
         return table
 
     def _write_table(self, date: dt.date, table):
@@ -39,6 +47,19 @@ class ExpenseService:
                         row['expense'],
                         row['title'],
                         " ".join(row['tags'])])
+
+    def earliest_month(self):
+        if self._earliest_month:
+            return self._earliest_month
+        files = sorted([f.stem for f in self.data_dir.glob("[0-9][0-9][0-9][0-9]_[0-3][0-9].tsv")])
+        for f in files:
+            try:
+                self._earliest_month = dt.date.strptime(f, '%Y_%m')
+                break
+            except ValueError:
+                pass
+        return self._earliest_month
+
 
     def write(self, ent: dict):
         table = self._read_table(ent['date'])
@@ -67,6 +88,7 @@ class ExpenseService:
             dates.append(dt.date(cyear, cmonth, 1))
             cmonth += 1
             if cmonth > 12:
+                cmonth = 1
                 cyear += 1
 
         dates.append(dt.date(cyear, cmonth, 1))
