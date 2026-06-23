@@ -120,6 +120,15 @@ Kirigami.ApplicationWindow {
 
             verticalScrollBarPolicy: QQC2.ScrollBar.AlwaysOn
             title: "Expenses"
+            actions: [
+                Kirigami.Action {
+                    icon.name: "media-playback-start-symbolic"
+                    text: "Play Game"
+                    onTriggered: {
+                        petLauncher.launch_pet_room();
+                    }
+                }
+            ]
 
             Connections {
                 function onLoadingFailed(errmsg) {
