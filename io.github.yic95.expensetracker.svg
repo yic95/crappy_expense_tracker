@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+
+<svg
+   width="800px"
+   height="800px"
+   viewBox="0 0 24 24"
+   fill="none"
+   version="1.1"
+   id="svg1"
+   sodipodi:docname="io.github.yic95.expensetracker.svg"
+   inkscape:version="1.4.4 (dcaf3e7d9e, 2026-05-05)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="1.0233785"
+     inkscape:cx="404.05384"
+     inkscape:cy="451.44589"
+     inkscape:window-width="1920"
+     inkscape:window-height="1006"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg1" />
+  <path
+     d="M 10,19 H 6.2 C 5.0799,19 4.51984,19 4.09202,18.782 3.71569,18.5903 3.40973,18.2843 3.21799,17.908 3,17.4802 3,16.9201 3,15.8 V 8.2 C 3,7.07989 3,6.51984 3.21799,6.09202 3.40973,5.71569 3.71569,5.40973 4.09202,5.21799 4.51984,5 5.0799,5 6.2,5 h 11.6 c 1.1201,0 1.6802,0 2.108,0.21799 0.3763,0.19174 0.6823,0.4977 0.874,0.87403 C 21,6.51984 21,7.0799 21,8.2 V 8.5 M 14,20 16.025,19.595 c 0.1765,-0.0353 0.2648,-0.053 0.3471,-0.0853 0.0731,-0.0286 0.1426,-0.0658 0.2069,-0.1107 0.0726,-0.0506 0.1362,-0.1142 0.2636,-0.2416 L 21,15 c 0.5523,-0.5523 0.02464,-0.920036 -0.527664,-1.472336 C 19.920036,12.975364 19.5523,12.4477 19,13 l -4.1574,4.1574 c -0.1274,0.1274 -0.191,0.191 -0.2416,0.2636 -0.0449,0.0643 -0.0821,0.1338 -0.1107,0.2069 -0.0323,0.0823 -0.05,0.1706 -0.0853,0.3471 z"
+     stroke="#000000"
+     stroke-width="2"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     id="path1"
+     sodipodi:nodetypes="csccssccssccsccsccsssssccsc" />
+  <text
+     xml:space="preserve"
+     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:5.76px;font-family:'IBM Plex Mono';-inkscape-font-specification:'IBM Plex Mono Bold';writing-mode:lr-tb;direction:ltr;fill:#000000;stroke-width:0.03"
+     x="5.6284161"
+     y="11.989699"
+     id="text1"><tspan
+       sodipodi:role="line"
+       id="tspan1"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:'IBM Plex Mono';-inkscape-font-specification:'IBM Plex Mono Bold';stroke-width:0.03;font-size:5.76px"
+       x="5.6284161"
+       y="11.989699" /></text>
+  <path
+     d="M 8.3032602,12.294362 V 11.392719 H 6.1334529 v -1.238843 h 2.096503 V 9.2522336 H 6.1334529 V 8.0793648 H 8.3032602 V 7.1777219 H 5.0338884 V 12.294362 Z M 11.741234,9.6627377 13.082703,7.1777219 H 11.931826 L 11.492,7.9913996 11.110817,8.8124078 h -0.05864 L 10.678322,7.9913996 10.260488,7.1777219 H 9.006984 l 1.341469,2.4703549 -1.4367646,2.6462852 h 1.1508776 l 0.542452,-1.01893 0.366521,-0.806347 h 0.06597 l 0.359191,0.806347 0.527791,1.01893 h 1.253504 z m 3.166749,2.6316243 v -1.861929 h 0.872321 c 1.004269,0 1.568712,-0.6377476 1.568712,-1.6273556 0,-0.9896081 -0.564443,-1.6273555 -1.568712,-1.6273555 h -1.979216 v 5.1166401 z m 0,-4.2296581 h 0.593765 c 0.51313,0 0.68906,0.1832608 0.68906,0.630417 v 0.2199129 c 0,0.4471563 -0.17593,0.630417 -0.68906,0.630417 h -0.593765 z"
+     id="text2"
+     style="font-weight:bold;font-size:7.33043px;font-family:'IBM Plex Mono';-inkscape-font-specification:'IBM Plex Mono Bold';fill:#000000;stroke-width:0.0381793"
+     aria-label="EXP" />
+</svg>

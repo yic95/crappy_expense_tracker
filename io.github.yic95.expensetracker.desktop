@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=Crappy Expense Tracker
+GenericName=Expense Tracker
+Comment=A featureless expense tracker
+Version=1.0
+Exec=expensetracker
+Icon=io.github.yic95.expensetracker
+Type=Application
+Terminal=false
+Categories=Office;
+X-KDE-FormFactor=desktop;tablet;handset;
+

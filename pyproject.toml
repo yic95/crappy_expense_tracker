@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "io.github.yic95.expensetracker"
+version = "0.0.1"
+authors = [{name = "Yichm", email = "0Luke.Luke0@gmail.com"}]
+maintainers = [{name = "Yichm", email = "0Luke.Luke0@gmail.com"}]
+description = "A featureless expense tracker"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Intended Audience :: End Users/Desktop",
+    "Topic :: Utilities",
+    "Programming Language :: Python",
+    "Operating System :: POSIX :: Linux",
+]
+keywords = ["expense budget"]
+dependencies = ["appdirs"]
+
+
+[project.readme]
+file = "README.md"
+content-type = "text/markdown"
+
+[project.scripts]
+expensetracker = "expensetracker.expense_tracker_app:main"
+
+[tool.setuptools]
+packages = ["expensetracker"]
+package-dir = {expensetracker = "src"}
+include-package-data = true
+
+
+[tool.setuptools.data-files]
+
+"share/applications" = ["io.github.yic95.expensetracker.desktop"]
+"share/icons/hicolor/scalable/apps" = ["io.github.yic95.expensetracker.svg"]
+# "share/metainfo" = ["io.github.yic95.expensetracker.metainfo.xml"]

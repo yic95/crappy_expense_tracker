@@ -1,0 +1,17 @@
+Metadata-Version: 2.4
+Name: io.github.yic95.expensetracker
+Version: 0.0.1
+Summary: A featureless expense tracker
+Author-email: Yichm <0Luke.Luke0@gmail.com>
+Maintainer-email: Yichm <0Luke.Luke0@gmail.com>
+Keywords: expense budget
+Classifier: Development Status :: 3 - Alpha
+Classifier: License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)
+Classifier: Intended Audience :: End Users/Desktop
+Classifier: Topic :: Utilities
+Classifier: Programming Language :: Python
+Classifier: Operating System :: POSIX :: Linux
+Description-Content-Type: text/markdown
+Requires-Dist: appdirs
+
+# Crappy Expense Tracker — 沒什麼功能的記帳程式
