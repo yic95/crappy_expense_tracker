@@ -13,16 +13,16 @@ from PySide6.QtQml import (
     QQmlApplicationEngine,
     qmlRegisterType,
 )
-from expensemodel import ExpenseModel
-from expenseservice import ExpenseService
-from tagsservice import TagsService
-from datevalidator import DateValidator
+from expensetracker.expensemodel import ExpenseModel
+from expensetracker.expenseservice import ExpenseService
+from expensetracker.tagsservice import TagsService
+from expensetracker.datevalidator import DateValidator
 
 
 def get_config():
     appname = 'ExpenseTracker'
     appauthor = 'Yichm'
-    app_data_dir = pathlib.Path(appdirs.user_data_dir(appname, appauthor))
+    app_data_dir = pathlib.Path(appdirs.user_config_dir(appname, appauthor))
     expense_dir_file = app_data_dir / 'settings.json'
     result = {}
     with expense_dir_file.open('r', encoding='utf-8', newline='') as f:

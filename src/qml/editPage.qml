@@ -94,9 +94,10 @@ Kirigami.ScrollablePage {
             }
         }
 
-        Item {
+        ColumnLayout {
             Kirigami.FormData.label: "Tags"
             Kirigami.FormData.isSection: true
+            Kirigami.FormData.buddyFor: tagsFlow
 
             Flow {
                 // visible: tags !== undefined && tags.length > 0
@@ -104,6 +105,7 @@ Kirigami.ScrollablePage {
                 id: tagsFlow
 
                 property var activeTags: !editPage.isCreateMode ? (editPage.getModelData("tags")) : []
+                property var initialActiveTags: !editPage.isCreateMode ? (editPage.getModelData("tags")) : []
 
                 Layout.fillWidth: true
                 spacing: Kirigami.Units.smallSpacing
@@ -112,9 +114,11 @@ Kirigami.ScrollablePage {
                     model: expenseModel.all_tags
 
                     delegate: Kirigami.Chip {
+                        id: tagDelegate
+
                         required property string modelData
 
-                        checked: tagsFlow.activeTags.indexOf(modelData) != -1
+                        checked: tagsFlow.initialActiveTags.indexOf(modelData) != -1
                         text: modelData.trim()
                         closable: false
                         onCheckedChanged: {

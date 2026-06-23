@@ -19,18 +19,9 @@ class DateValidator(QValidator):
         if len(sep_symbol_set) != 1:
             return strip_str
         (sep_symbol,) = sep_symbol_set
+        strip_str = strip_str.replace(sep_symbol, '-', -1)
         if len(strip_str.split(sep_symbol)) != 3:
-            return strip_str.replace(sep_symbol, '-', -1)
-        try:
-            date.strptime(strip_str, f"%Y{sep_symbol}%m{sep_symbol}%d")
-            return strip_str.replace(sep_symbol, '-', -1)
-        except:
-            pass
-        try:
-            date.strptime(strip_str[:-1:], f"%Y{sep_symbol}%m{sep_symbol}%d")
-            return strip_str[:-1:].replace(sep_symbol, '-', -1)
-        except:
-            return strip_str.replace(sep_symbol, '-', -1)
+            return strip_str
 
     def validate(self, string: str, position: int):
         strip_str = string.strip()
