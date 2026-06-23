@@ -7,13 +7,21 @@ Kirigami.ApplicationWindow {
     id: appwindow
 
     function pushEditPage(targetIndex) {
-        if (targetIndex === undefined)
+        if (targetIndex === undefined || targetIndex < 0)
             targetIndex = -1;
+        else
+            targetIndex = expenseProxy.getSourceRow(targetIndex)
 
-        applicationWindow().pageStack.push(Qt.resolvedUrl("editPage.qml"), {
+        if (applicationWindow().pageStack.depth > 1)
+            applicationWindow().pageStack.insertPage(1, Qt.resolvedUrl("EditPage.qml"), {
+            "targetRow": targetIndex
+        });
+        else
+            applicationWindow().pageStack.push(Qt.resolvedUrl("EditPage.qml"), {
             "targetRow": targetIndex
         });
     }
+
 
     minimumWidth: Kirigami.Units.gridUnit * 20
     minimumHeight: Kirigami.Units.gridUnit * 30
@@ -38,6 +46,19 @@ Kirigami.ApplicationWindow {
         }
 
     }
+
+    Kirigami.PromptDialog {
+        id: expenseStatsPopup
+
+        QQC2.Label {
+            text: "Month: " + expenseModel.getMonthlyExpense()
+        }
+
+        QQC2.Label {
+            text: "Day: " + expenseModel.getDailyExpense()
+        }
+    }
+
 
     Component {
         id: expenseListDelegate
@@ -117,17 +138,63 @@ Kirigami.ApplicationWindow {
 
         Kirigami.ScrollablePage {
             id: expensePage
-
             verticalScrollBarPolicy: QQC2.ScrollBar.AlwaysOn
             title: "Expenses"
+
+            QQC2.ActionGroup {
+                id: sortGroup
+                exclusive: true
+            }
             actions: [
+                Kirigami.Action {
+                    icon.name: "step_object_Graph-symbolic"
+                    text: "View Stat"
+                    onTriggered: {
+                        expenseStatsPopup.open();
+                    }
+                },
+                Kirigami.Action {
+                    icon.name: "list-add-symbolic"
+                    text: "Add New Entry"
+                    onTriggered: {
+                        pushEditPage(-1);
+                    }
+                },
+                Kirigami.Action {
+                    icon.name: "view-sort-symbolic"
+                    text: "Sort"
+                    Kirigami.Action {
+                        QQC2.ActionGroup.group : sortGroup
+                        icon.name: "view-calendar-symbolic"
+                        checkable: true
+                        text: "Sort by date"
+                        checked: true
+                        onTriggered: {
+                            expenseProxy.sortByDate();
+                            expenseListView.section.property =  "date"
+                        }
+                    }
+
+                    Kirigami.Action {
+                        QQC2.ActionGroup.group : sortGroup
+                        icon.name: "amarok_playcount-symbolic"
+                        checkable: true
+                        text: "Sort by expense"
+                        checked: false
+                        onTriggered: {
+                            expenseProxy.sortByExpense();
+                            expenseListView.section.property =  "expense"
+                        }
+                    }
+                },
                 Kirigami.Action {
                     icon.name: "media-playback-start-symbolic"
                     text: "Play Game"
                     onTriggered: {
                         petLauncher.launch_pet_room();
                     }
-                }
+                },
+
             ]
 
             Connections {
@@ -142,37 +209,11 @@ Kirigami.ApplicationWindow {
                 id: expenseListView
 
                 spacing: Kirigami.Units.largeSpacing
-                model: expenseModel
+                model: expenseProxy
                 delegate: expenseListDelegate
                 anchors.fill: parent
                 section.property: "date"
                 section.delegate: expenseSectionTitle
-                onAtYEndChanged: {
-                    if (expenseListView.atYEnd)
-                        expenseModel.load();
-
-                }
-            }
-
-            header: QQC2.ToolBar {
-
-                contentItem: Item {
-                    RowLayout {
-                        QQC2.Button {
-                            onClicked: {
-                                pushEditPage(-1);
-                            }
-                            icon.name: "list-add-symbolic"
-                            text: "Add New Entry"
-                        }
-
-                        QQC2.ComboBox {
-                        }
-
-                    }
-
-                }
-
             }
 
         }

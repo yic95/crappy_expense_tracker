@@ -18,6 +18,7 @@ from expensetracker.expenseservice import ExpenseService
 from expensetracker.tagsservice import TagsService
 from expensetracker.datevalidator import DateValidator
 from expensetracker.launchpet import PetLauncher
+from expensetracker.expenseproxy import ExpenseProxyModel
 
 
 def get_config():
@@ -43,7 +44,10 @@ def main():
     expense_service = ExpenseService(data_dir)
     tags_service = TagsService(data_dir)
     expense_model = ExpenseModel(service=expense_service, tags_service=tags_service)
-    pet_launcher = PetLauncher()
+    pet_launcher = PetLauncher(expense_service=expense_service)
+    expense_proxy = ExpenseProxyModel()
+    expense_proxy.setSourceModel(expense_model)
+    expense_proxy.sortByDate()
 
     """Needed to get proper KDE style outside of Plasma"""
     if not os.environ.get("QT_QUICK_CONTROLS_STYLE"):
@@ -57,6 +61,7 @@ def main():
     url = QUrl(f"file://{base_path}/qml/main.qml")
     engine.rootContext().setContextProperty("expenseModel", expense_model)
     engine.rootContext().setContextProperty("petLauncher", pet_launcher)
+    engine.rootContext().setContextProperty("expenseProxy", expense_proxy)
 
     engine.load(url)
 

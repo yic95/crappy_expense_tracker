@@ -12,13 +12,14 @@ from PySide6.QtCore import (
     Property
 )
 from PySide6.QtQml import QmlElement
+from expensetracker.userroles import ExpenseRole
 
 class ExpenseModel(QAbstractListModel):
-    IdRole = Qt.UserRole + 1
-    DateRole = Qt.UserRole + 2
-    ExpenseRole = Qt.UserRole + 3
-    TitleRole = Qt.UserRole + 4
-    TagsRole = Qt.UserRole + 5
+    IdRole = ExpenseRole.ROLE_ID
+    DateRole = ExpenseRole.ROLE_DATE
+    ExpenseRole = ExpenseRole.ROLE_EXP
+    TitleRole = ExpenseRole.ROLE_TITLE
+    TagsRole = ExpenseRole.ROLE_TAG
     loadingFailed = Signal(str)
     hasMoreChanged = Signal(bool)
     allTagChanged = Signal(list)
@@ -36,12 +37,16 @@ class ExpenseModel(QAbstractListModel):
     def hasMore(self):
         return self._has_more_data
 
+    def canFetchMore(self, parent):
+        return self._has_more_data
+
+    def fetchMore(self, parent):
+        self.load()
+
     def rowCount(self, parent=QModelIndex()):
         return len(self.entries)
 
     def data(self, index, role):
-        if type(role) != int:
-            raise TypeError
         if not index.isValid():
             return None
 
@@ -127,6 +132,30 @@ class ExpenseModel(QAbstractListModel):
         row['date'] = date
         row['tags'] = tags
         self.dataChanged.emit(idx, idx)
+
+    def _load_month(self):
+        if not self.entries:
+            self.load()
+        while datetime.date.today() - datetime.timedelta(30) < self.earlist_date \
+            and self.service.earliest_month() < self.earlist_date:
+            self.load()
+
+    @Slot(result=int)
+    def getMonthlyExpense(self):
+        self._load_month()
+        cutoff = datetime.date.today() - datetime.timedelta(30)
+        return sum([ent['expense'] for ent in self.entries if cutoff <= ent['date']])
+
+    @Slot(result=int)
+    def getDailyExpense(self):
+        if not self.entries:
+            self.load()
+        today = datetime.date.today()
+        for e in self.entries:
+            if e['date'] == today:
+                return e['expense']
+            if e['date'] < today:
+                return 0
 
     @Slot()
     def load(self):
