@@ -15,6 +15,8 @@ $ source env/bin/activate
 $ python -m pip install .
 ```
 
+把寵物程式資料夾放在 `src/PetLedger`。建議在命令列開程式，才能知道錯在哪。
+
 執行：
 ```bash
 $ source env/bin/activate
