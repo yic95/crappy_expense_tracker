@@ -25,8 +25,6 @@ class ExpenseProxyModel(QSortFilterProxyModel):
         self.setDynamicSortFilter(True)
         self.sort(0, Qt.DescendingOrder)
 
-    # ---------- Filtering ----------
-
     @Property(str, notify=filterTextChanged)
     def filterText(self):
         return self._filter_text
@@ -76,8 +74,6 @@ class ExpenseProxyModel(QSortFilterProxyModel):
             r = model.data(right, ExpenseRole.ROLE_DATE)
 
         return l < r
-
-    # Convenience slots for QML
 
     @Slot()
     def sortByDate(self):
